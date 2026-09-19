@@ -93,7 +93,7 @@ function getEmptyMessage() {
   if (currentFilter === 'active') {
     return '太棒了,沒有未完成的事項!';
   }
-  return '還沒有已完成的事項。';
+  return '目前沒有已完成的事項,符合篩選條件的項目會在切回「全部」時顯示。';
 }
 
 /** 依照目前的 todos 陣列與篩選條件,重新畫出整份清單 */
