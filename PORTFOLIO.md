@@ -4,7 +4,7 @@
 
 ## 線上展示
 
-- GitHub Pages: https://<你的帳號>.github.io/<你的repo名稱>/
+- GitHub Pages: https://elliswu.github.io/my-copilot-workshop/
 
 ## 功能
 
