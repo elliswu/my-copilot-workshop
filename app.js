@@ -10,6 +10,7 @@ const input = document.getElementById('todo-input');
 const list = document.getElementById('todo-list');
 const emptyState = document.getElementById('empty-state');
 const remainingCount = document.getElementById('remaining-count');
+const clearCompletedButton = document.getElementById('clear-completed');
 const filterButtons = document.querySelectorAll('.btn-filter');
 const themeToggle = document.getElementById('theme-toggle');
 const themeIcon = document.getElementById('theme-icon');
@@ -97,6 +98,16 @@ function getEmptyMessage() {
 }
 
 /** 依照目前的 todos 陣列與篩選條件,重新畫出整份清單 */
+function updateClearCompletedButton() {
+  if (!clearCompletedButton) return;
+
+  const completedCount = todos.filter((todo) => todo.completed).length;
+  const hasCompletedTodos = completedCount > 0;
+
+  clearCompletedButton.hidden = !hasCompletedTodos;
+  clearCompletedButton.setAttribute('aria-label', `清除全部 ${completedCount} 個已完成項目`);
+}
+
 function render() {
   const visibleTodos = getVisibleTodos();
 
@@ -136,6 +147,7 @@ function render() {
   // 更新未完成數量(不受篩選影響,永遠是整體數量)
   const remaining = todos.filter((todo) => !todo.completed).length;
   remainingCount.textContent = `未完成:${remaining} 項`;
+  updateClearCompletedButton();
 }
 
 // ---------- 操作行為 ----------
@@ -185,6 +197,19 @@ function setFilter(filter) {
   render();
 }
 
+/** 刪除所有已完成項目,在執行前先確認 */
+function clearCompletedTodos() {
+  const completedCount = todos.filter((todo) => todo.completed).length;
+  if (completedCount === 0) return;
+
+  const confirmed = window.confirm(`確定要刪除 ${completedCount} 個已完成項目嗎？`);
+  if (!confirmed) return;
+
+  todos = todos.filter((todo) => !todo.completed);
+  saveTodos();
+  render();
+}
+
 // ---------- 事件綁定 ----------
 
 // 送出表單 = 新增待辦
@@ -217,6 +242,9 @@ list.addEventListener('click', (event) => {
 filterButtons.forEach((button) => {
   button.addEventListener('click', () => setFilter(button.dataset.filter));
 });
+
+// 清除所有已完成項目
+clearCompletedButton.addEventListener('click', clearCompletedTodos);
 
 // 深色模式切換,並把選擇記在 localStorage
 themeToggle.addEventListener('click', () => {

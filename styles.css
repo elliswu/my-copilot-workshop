@@ -236,12 +236,29 @@ h1 {
 }
 
 .app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-top: 20px;
   padding-top: 16px;
   border-top: 1px solid var(--border);
-  text-align: center;
   font-size: 0.9rem;
   color: var(--text-muted);
+}
+
+.btn-clear-completed {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  color: var(--danger);
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-clear-completed:hover {
+  background: var(--danger-soft);
 }
 
 /* ---------- 無障礙:僅供螢幕閱讀器 ---------- */
