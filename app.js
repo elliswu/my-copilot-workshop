@@ -3,6 +3,7 @@
 
 const STORAGE_KEY = 'workshop-todos';
 const THEME_KEY = 'workshop-theme';
+const FILTER_KEY = 'workshop-filter';
 
 // 取得畫面上會用到的元素
 const form = document.getElementById('todo-form');
@@ -21,7 +22,7 @@ const themeLabel = document.getElementById('theme-label');
 let todos = loadTodos();
 
 // 目前的篩選條件:'all' | 'active' | 'completed'
-let currentFilter = 'all';
+let currentFilter = loadFilter();
 
 // ---------- 資料存取 ----------
 
@@ -40,6 +41,25 @@ function loadTodos() {
 /** 把目前的待辦清單寫回 localStorage */
 function saveTodos() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+}
+
+/** 從 localStorage 讀回篩選條件,不是預期值就回到全部 */
+function loadFilter() {
+  try {
+    const savedFilter = localStorage.getItem(FILTER_KEY);
+    if (savedFilter === 'all' || savedFilter === 'active' || savedFilter === 'completed') {
+      return savedFilter;
+    }
+  } catch (error) {
+    console.warn('讀取篩選條件失敗,將使用全部模式。', error);
+  }
+
+  return 'all';
+}
+
+/** 把目前的篩選條件寫回 localStorage */
+function saveFilter(filter) {
+  localStorage.setItem(FILTER_KEY, filter);
 }
 
 // ---------- 深色模式 ----------
@@ -97,6 +117,15 @@ function getEmptyMessage() {
   return '目前沒有已完成的事項,符合篩選條件的項目會在切回「全部」時顯示。';
 }
 
+/** 依照目前的篩選條件更新按鈕狀態 */
+function updateFilterButtons() {
+  filterButtons.forEach((button) => {
+    const isActive = button.dataset.filter === currentFilter;
+    button.classList.toggle('is-active', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
+  });
+}
+
 /** 依照目前的 todos 陣列與篩選條件,重新畫出整份清單 */
 function updateClearCompletedButton() {
   if (!clearCompletedButton) return;
@@ -111,6 +140,7 @@ function updateClearCompletedButton() {
 function render() {
   const visibleTodos = getVisibleTodos();
 
+  updateFilterButtons();
   list.replaceChildren();
 
   visibleTodos.forEach((todo) => {
@@ -186,14 +216,9 @@ function deleteTodo(id) {
 
 /** 切換篩選條件 */
 function setFilter(filter) {
-  currentFilter = filter;
-
-  filterButtons.forEach((button) => {
-    const isActive = button.dataset.filter === filter;
-    button.classList.toggle('is-active', isActive);
-    button.setAttribute('aria-pressed', String(isActive));
-  });
-
+  const allowedFilters = ['all', 'active', 'completed'];
+  currentFilter = allowedFilters.includes(filter) ? filter : 'all';
+  saveFilter(currentFilter);
   render();
 }
 
